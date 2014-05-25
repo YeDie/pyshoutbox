@@ -23,5 +23,5 @@ INSTALLING the PyShoutbox Python package:
 
 SOFTWARE REQUIREMENTS:
 
- - Installing PyShoutbox requires Python 3.X and up-to date versions requests
+ - Installing PyShoutbox requires Python 3.X and up-to date version of requests
    (sudo python3.4 -m pip install requests).
