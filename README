@@ -1,0 +1,27 @@
+	PyShoutbox release 1.X <https://github.com/YeDie/pyshoutbox>
+
+DOCUMENTATION:
+
+ - See the Wiki at <https://github.com/YeDie/pyshoutbox/wiki>
+
+INSTALLING the PyShoutbox Python package:
+
+ - To install from a source tarball, navigate to a directorty where you have
+   permissions (eg. your home directory), then download and unpack it:
+
+	wget https://github.com/YeDie/pyshoutbox/archive/master.zip
+	tar xzvf pyshoutbox-3.X.tar.gz
+
+   or clone with Git:
+
+	git clone https://github.com/YeDie/pyshoutbox.git
+
+   then run setup.py:
+
+	cd pyshoutbox
+	python3.4 setup.py install
+
+SOFTWARE REQUIREMENTS:
+
+ - Installing PyShoutbox requires Python 3.X and up-to date versions requests
+   (sudo python3.4 -m pip install requests).
