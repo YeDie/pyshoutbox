@@ -1,0 +1,13 @@
+# Setup files
+/build/
+/dist/
+/requests.egg-info/
+
+# Swap files and other junk
+*.pyc
+*.swp
+*.egg
+__pycache__/
+
+# git files we shouldn't ignore
+!.gitignore
