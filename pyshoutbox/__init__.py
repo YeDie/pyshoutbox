@@ -20,7 +20,7 @@ class shoutbox():
 			"aaabbb": None
 		}
 		self.shoutbox_char_limit = 200
-		self.shoutbox_website_field = True
+		self.shoutbox_website_field = 1
 		self.shoutbox_shouts = []
 		
 		# User data
@@ -28,8 +28,13 @@ class shoutbox():
 		self.user_name = None
 		self.user_website = ""
 		
+		# Admin panel data
+		self.admin_position = "Guest"
+
 		# Requests
 		self.request_session = requests.Session()
+		# A fake User-Agent is required to get past silly server
+		# configurations. Not doing so results in a 10-minute IP ban.
 		self.request_session.headers["User-Agent"] = "Mozilla/5.0"
 		self.request_responce = None
 	
@@ -67,6 +72,8 @@ class shoutbox():
 		return 0
 	
 	def get_shout(self, idn):
+		# Get shout based on ID number.
+
 		if (self.shoutbox_session_id == None):
 			return 1
 		
@@ -129,12 +136,12 @@ class shoutbox():
 		
 		return 0
 	
-	def post_shout(self, mesg):
+	def post_shout(self, message):
 		if (self.shoutbox_session_id == None):
 			return 1
 		if (self.user_name == None):
 			return 1
-		if (len(mesg) > self.shoutbox_char_limit):
+		if (len(message) > self.shoutbox_char_limit):
 			return 1
 		
 		post_url = self.shoutbox_url
@@ -142,7 +149,7 @@ class shoutbox():
 		
 		post_data = {
 			"name": self.user_name,
-			"message": mesg,
+			"message": message,
 			"shtoken": self.shoutbox_params["shtoken"],
 			"bid": self.shoutbox_params["bid"],
 			"aaabbb": self.shoutbox_params["aaabbb"],
@@ -167,6 +174,9 @@ class shoutbox():
 			return 0
 	
 	def delete_shout(self, shoutid):
+		# Delete shout based on shout ID (this is different from ID
+		# number).
+
 		if (self.shoutbox_session_id == None):
 			return 1
 		
@@ -196,6 +206,8 @@ class shoutbox():
 		
 		self.user_name = name
 		self.user_position = "Guest"
+
+		return 0
 	
 	def user_login(self, username, password, persistent=True):
 		if (self.shoutbox_session_id == None):
@@ -236,9 +248,13 @@ class shoutbox():
 		
 		self.user_name = username
 		self.user_position = ""
+
 		return 0
 	
 	def user_logout(self):
+		if (self.user_position == "Guest"):
+			return 1
+
 		get_url = self.shoutbox_url
 		get_url["query"] = "logout=1"
 		
@@ -248,27 +264,95 @@ class shoutbox():
 				url = url_to_string(get_url)
 			)
 		except requests.exceptions.ConnectionError as err:
+			
+			return 1
+		
+		if not (self.request_responce.status_code == 200):
+			
+			return 1
+		
+		return 0
+	
+	def admin_login(self, username, password):
+		if (self.shoutbox_session_id == None):
+			return 1
+
+		post_url = self.shoutbox_url
+		post_url["path"] = "ladm"
+		post_url["query"] = "bid=" + self.shoutbox_params["bid"]
+
+		post_data = {
+			"bid": self.shoutbox_params["bid"],
+			"username": username,
+			"password": password,
+			"submit": "Login"
+		}
+
+		try:
+			self.request_responce = self.request_session.request(
+				method = "POST",
+				url = url_to_string(post_url),
+				data = post_data
+			)
+		except requests.exceptions.ConnectionError as err:
 			return 1
 		
 		if not (self.request_responce.status_code == 200):
 			return 1
 		
+		if (self.request_responce.text.find("Login Successful") == -1):
+			return 2
+
+		self.admin_position = ""
+
+		return 0
+	
+	def admin_logout():
+		if (self.admin_position == "Guest"):
+			return 1
+
+		get_url = self.shoutbox_url
+		get_url["path"] = "adm"
+		get_url["query"] = (
+			"bid=" + self.shoutbox_params["bid"] +
+			"&lo=1"
+		)
+
+		try:
+			self.request_responce = self.request_session.request(
+				method = "GET",
+				url = url_to_string(get_url)
+			)
+		except requests.exceptions.ConnectionError as err:
+			
+			return 1
+		
+		if not (self.request_responce.status_code == 200):
+			
+			return 1
+
 		return 0
 	
 def url_is_valid(url):
 	if (type(url) is str):
 		url = urlparse(url)._asdict()
+	
 	if (url["scheme"] == ""):
 		url["scheme"] = "http"
 	
 	if not (url["scheme"] in ("http", "https")):
 		return 0
+	
 	elif (url["netloc"] == ""):
 		return 0
+	
 	else:
+		
 		return 1
 
 def cut_string(string, searchstring, offset=[0, 0], cut_searchstrings=0):
+	# Cut string from and to search strings.
+
 	startpos = 0
 	while (offset[0] >= 0):
 		offset[0] -= 1
@@ -322,4 +406,5 @@ def patch_shoutbox(html):
 	return html
 
 def url_to_string(url):
+	
 	return urlunparse(tuple(url.values()))
