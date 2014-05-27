@@ -307,7 +307,7 @@ class shoutbox():
 
 		return 0
 	
-	def admin_logout():
+	def admin_logout(self):
 		if (self.admin_position == "Guest"):
 			return 1
 
