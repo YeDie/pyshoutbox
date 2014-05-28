@@ -15,7 +15,7 @@ packages = [
 requires = ["requests>=2.2.1"]
 
 setup(
-	name="requests",
+	name="pyshoutbox",
 	version = __version__,
 	description = "Python iShoutbox Parser",
 	author = "Benjamin Sparr",
