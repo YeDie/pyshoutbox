@@ -142,11 +142,7 @@ class shout_parser(HTMLParser):
 			if (self.last_tagnames[0] == "table"):
 				self.data = ""
 			else:
-				if (data[-2:] == "\n\n"):
-					self.shout["message"] += data[:-2]
-				
-				else:
-					self.shout["message"] += data
+				self.shout["message"] += data.rstrip("\n")
 	
 	def handle_shout_data(self, value):
 		if (value.find("ID") != -1):
