@@ -60,7 +60,14 @@ class shoutbox():
 		if not (self.request_responce.status_code == 200):
 			return 1
 		
-		shoutbox_html = patch_shoutbox(self.request_responce.text)
+		try:
+			shoutbox_html = self.request_responce.content.decode(
+				"utf-8"
+			)
+		except UnicodeDecodeError as err:
+			shoutbox_html = self.request_responce.content.decode()
+
+		shoutbox_html = patch_shoutbox(shoutbox_html)
 		shoutparser.box_parser.feed(shoutbox_html)
 		
 		if (self.shoutbox_title == None):
@@ -98,7 +105,14 @@ class shoutbox():
 		if (self.request_responce.text == "Possible hacking attempt."):
 			return 1
 		
-		shoutparser.shout_parser.feed(self.request_responce.text)
+		try:
+			shoutbox_html = self.request_responce.content.decode(
+				"utf-8"
+			)
+		except UnicodeDecodeError as err:
+			shoutbox_html = self.request_responce.content.decode()
+		
+		shoutparser.shout_parser.feed(shoutbox_html)
 		
 		return dict(shoutparser.shout_parser.shout)
 	
@@ -130,7 +144,14 @@ class shoutbox():
 		if (self.request_responce.text == "1"):
 			return 2
 		
-		shoutparser.shout_parser.feed(self.request_responce.text)
+		try:
+			shoutbox_html = self.request_responce.content.decode(
+				"utf-8"
+			)
+		except UnicodeDecodeError as err:
+			shoutbox_html = self.request_responce.content.decode()
+		
+		shoutparser.shout_parser.feed(shoutbox_html)
 		self.shouts = list(shoutparser.shout_parser.shouts)
 		self.shouts.append(shoutparser.shout_parser.shout)
 		
